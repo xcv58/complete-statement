@@ -7,8 +7,9 @@
 
 # For more detailed documentation see
 # https://atom.io/docs/latest/behind-atom-keymaps-in-depth
-'atom-text-editor':
+'atom-workspace atom-text-editor.vim-mode:not(.insert-mode)':
   'ctrl-a': 'complete-statement:complete'
 
-'atom-text-editor.vim-mode:not(.insert-mode)':
-  'ctrl-a': 'complete-statement:complete'
+# 'atom-text-editor':
+'atom-workspace atom-text-editor:not([mini])':
+  'cmd-enter': 'complete-statement:complete'
