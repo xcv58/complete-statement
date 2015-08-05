@@ -1,0 +1,22 @@
+# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Complete Statement'
+      'command': 'complete-statement:complete'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Complete Statement'
+      'submenu': [
+        {
+          'label': 'Complete'
+          'command': 'complete-statement:complete'
+        }
+      ]
+    ]
+  }
+]
