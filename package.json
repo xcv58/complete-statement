@@ -2,13 +2,13 @@
   "name": "complete-statement",
   "main": "./lib/complete-statement",
   "version": "0.0.0",
-  "description": "A short description of your package",
+  "description": "Completing Statements",
   "keywords": [
   ],
   "activationCommands": {
     "atom-workspace": "complete-statement:complete"
   },
-  "repository": "https://github.com/atom/complete-statement",
+  "repository": "https://github.com/xcv58/complete-statement",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
