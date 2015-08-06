@@ -6,36 +6,69 @@ module.exports = CompleteStatement =
 
   complete: ->
     editor = atom.workspace.getActiveTextEditor()
-    grammar = editor.getGrammar()
     editor.moveToFirstCharacterOfLine()
     @processSelection editor, selection for selection in editor.getSelections()
 
-
-  processSelection: (grammar, selection) ->
-    if @needBlock grammar, selection
-      @insertBlock grammar, selection
+  processSelection: (editor, selection) ->
+    @removeTrailingWhitespace selection
+    if @needBlock editor, selection
+      @insertBlock editor, selection
     else
-      @insertEndChar grammar, selection
+      @insertEndChar editor, selection
 
-  needBlock: (grammar, selection, fnBlock, fnEnd) ->
+  needBlock: (editor, selection) ->
+    selection.selectToFirstCharacterOfLine()
+    selection.clear()
     selection.selectWord()
-    selection.getText() in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
-
-  insertBlock: (grammar, selection) ->
+    word = selection.getText()
     selection.selectToEndOfLine()
     selection.clear()
-    selection.insertText '{\n}'
-    console.log 'insertBlock'
+    word in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
 
-  insertEndChar: (grammar, selection) ->
-    console.log 'insertEndChar'
-    console.log 'insertEndChar'
+  insertBlock: (editor, selection) ->
+    if editor.getGrammar().name == 'Python'
+      @insertPythonBlock editor, selection
+    else
+      @insertCStyleBlock editor, selection
 
-  insertPython: ->
-    console.log 'insertPython'
+  insertEndChar: (editor, selection) ->
+    selection.selectToEndOfLine()
+    selection.clear()
+    selection.selectLeft()
+    lastChar = selection.getText()
+    selection.insertText lastChar
+    if editor.getGrammar().name != 'Python' and lastChar != ';'
+      selection.insertText ';'
+    selection.insertText '\n ', select: true
+    selection.autoIndentSelectedRows()
+    selection.selectToEndOfLine()
+    selection.clear()
 
-  insertCoffeeScript: ->
-    console.log 'insertPython'
+  insertPythonBlock: (editor, selection) ->
+    selection.selectToEndOfLine()
+    selection.clear()
+    selection.selectLeft()
+    endWord = selection.getText()
+    text = endWord
+    text += ':' if endWord != ':'
+    selection.insertText text + '\n ', select: true
+    selection.autoIndentSelectedRows()
+    selection.selectDown(1)
+    selection.selectToEndOfLine()
+
+  insertCStyleBlock: (editor, selection) ->
+    selection.insertText ' {\n\n}', select: true
+    selection.autoIndentSelectedRows()
+    selection.clear()
+    selection.selectUp(1)
+    selection.selectToEndOfLine()
+    selection.clear()
+
+  removeTrailingWhitespace: (selection) ->
+    selection.selectToBeginningOfLine()
+    selection.clear()
+    selection.selectToEndOfLine()
+    selection.insertText selection.getText().replace(/[ \t]+$/, '')
 
   deactivate: ->
     @modalPanel.destroy()
