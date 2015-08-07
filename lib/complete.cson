@@ -1,0 +1,14 @@
+Python:
+  needBlock: "needPythonBlock"
+  insertBlock: "insertPythonBlock"
+  insertEndChar: "insertPythonEndChar"
+
+Java:
+  needBlock: "needCStyleBlock"
+  insertBlock: "insertCStyleBlock"
+  insertEndChar: "insertCStyleEndChar"
+
+nullGrammar:
+  needBlock: "needCStyleBlock"
+  insertBlock: "insertCStyleBlock"
+  insertEndChar: "insertCStyleEndChar"
