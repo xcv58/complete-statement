@@ -8,7 +8,11 @@ Java:
   insertBlock: "insertCStyleBlock"
   insertEndChar: "insertCStyleEndChar"
 
-nullGrammar:
+JavaScript:
   needBlock: "needCStyleBlock"
   insertBlock: "insertCStyleBlock"
   insertEndChar: "insertCStyleEndChar"
+
+nullGrammar:
+  needBlock: "needNullBlock"
+  insertEndChar: "insertNullEndChar"

@@ -1,4 +1,25 @@
 module.exports =
+  needPythonBlock: (selection) ->
+    (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
+
+  needCStyleBlock: (selection) ->
+    (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
+
+  needNullBlock: (selection) ->
+    false
+
+  insertPythonEndChar: (selection) ->
+    @removeTrailingWhitespace selection
+    @insertNewLine selection
+
+  insertCStyleEndChar: (selection) ->
+    @removeTrailingWhitespace selection
+    @insertNewLine selection, (@lastChar selection), ';'
+
+  insertNullEndChar: (selection) ->
+    @removeTrailingWhitespace selection
+    @insertNewLine selection
+
   insertPythonBlock: (selection) ->
     @removeTrailingWhitespace selection
     @insertNewLine selection, (@lastChar selection), ':'
@@ -9,23 +30,14 @@ module.exports =
     if lastChar is '{'
       @insertNewLine selection
     else
-      selection.cursor.moveToEndOfLine()
-      selection.insertText(" {\n\n}", {select: true, autoIndent: true, autoIndentNewline: true, normalizeLineEndings: true})
-      selection.autoIndentSelectedRows()
+      @insertTextAtEndOfLine selection, " {\n\n}"
       selection.cursor.moveUp(1)
-      selection.cursor.moveToEndOfScreenLine()
+      selection.cursor.moveToEndOfLine()
 
   removeTrailingWhitespace: (selection) ->
-    selection.selectToBeginningOfLine()
-    selection.clear()
+    selection.cursor.moveToBeginningOfLine()
     selection.selectToEndOfLine()
     selection.insertText selection.getText().replace(/[ \t]+$/, '')
-
-  needPythonBlock: (selection) ->
-    (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
-
-  needCStyleBlock: (selection) ->
-    (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
 
   firstWord: (selection) ->
     selection.cursor.moveToBeginningOfLine()
@@ -40,17 +52,11 @@ module.exports =
     char
 
   insertNewLine: (selection, lastChar = '', target = '') ->
-    selection.cursor.moveToEndOfLine()
-    console.log 'last:', lastChar
     target = '' if lastChar in [target, '\n']
-    selection.insertText "#{target}\n ", select: true
+    @insertTextAtEndOfLine selection, "#{target}\n "
+
+  insertTextAtEndOfLine: (selection, text) ->
+    selection.cursor.moveToEndOfLine()
+    selection.insertText text, select: true
     selection.autoIndentSelectedRows()
     selection.cursor.moveToEndOfLine()
-
-  insertPythonEndChar: (selection) ->
-    @removeTrailingWhitespace selection
-    @insertNewLine selection
-
-  insertCStyleEndChar: (selection) ->
-    @removeTrailingWhitespace selection
-    @insertNewLine selection, (@lastChar selection), ';'

@@ -15,18 +15,16 @@ module.exports = CompleteStatement =
   complete: ->
     editor = atom.workspace.getActiveTextEditor()
     # editor.moveToFirstCharacterOfLine()
-    # TODO: find block detect function
-    # TODO: find insertBlock function
-    # TODO: find insertEndChar function
-    # TODO: All those based on grammar
+    # DONE: find block detect function
+    # DONE: find insertBlock function
+    # DONE: find insertEndChar function
+    # DONE: All those based on grammar
     functions = @getFunctions editor
     editor?.mutateSelectedText (selection, index) ->
       if Utils[functions.needBlock] selection
         Utils[functions.insertBlock] selection
       else
         Utils[functions.insertEndChar] selection
-    # Utils[getGrammar.insertBlock]()
-    # @processSelection editor, selection for selection in editor.getSelections()
 
   getFunctions: (editor) ->
     grammar = editor?.getGrammar?()
@@ -38,16 +36,11 @@ module.exports = CompleteStatement =
     @config[grammarName] ? @config.nullGrammar
     # console.log @config[grammarName].insertBlock
 
-
-  # CSON.readFile './test.cson', (error, object={}) ->
-  #   console.error error
-  #   console.log  content
   loadConfigFile: (filePath, callback) ->
     return callback({}) unless CSON.isObjectPath(filePath)
     callback(CSON.readFileSync filePath)
 
   load: ->
-    console.log "LOAD!!!!!"
     bundledPath = CSON.resolve(path.join(__dirname, 'complete'))
     @loadConfigFile bundledPath, (config) => @config = config
 
