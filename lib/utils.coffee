@@ -1,4 +1,8 @@
 module.exports =
+  complete: (editor) ->
+    grammarName = @getGrammarName editor
+    editor.mutateSelectedText (selection) => if @[grammarName] then @[grammarName] selection else @unsupport selection
+
   python: (selection) ->
     if @needPythonBlock selection then @insertPythonBlock selection else @insertPythonEndChar selection
 
@@ -25,15 +29,13 @@ module.exports =
 
   insertPythonBlock: (selection) -> @insert selection, (selection) => @insertNewLine selection, (@lastChar selection), ':'
 
-  insertCStyleBlock: (selection) ->
-    @insert selection, (selection) =>
-      lastChar = @lastChar selection
-      if lastChar is '{'
-        @insertNewLine selection
-      else
-        @insertTextAtEndOfLine selection, " {\n\n}"
-        selection.cursor.moveUp(1)
-        selection.cursor.moveToEndOfLine()
+  insertCStyleBlock: (selection) -> @insert selection, (selection) =>
+    if (@lastChar selection) is '{'
+      @insertNewLine selection
+    else
+      @insertTextAtEndOfLine selection, " {\n\n}"
+      selection.cursor.moveUp(1)
+      selection.cursor.moveToEndOfLine()
 
   removeTrailingWhitespace: (selection) ->
     selection.cursor.moveToBeginningOfLine()
@@ -58,3 +60,8 @@ module.exports =
     selection.insertText text, select: true
     selection.autoIndentSelectedRows()
     selection.cursor.moveToEndOfLine()
+
+  getGrammarName: (editor) ->
+    grammar = editor?.getGrammar?()
+    grammarName = grammar.name ? grammar.scopeName if grammar?
+    grammarName?.toLowerCase()

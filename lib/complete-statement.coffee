@@ -8,23 +8,12 @@ module.exports = CompleteStatement =
 
   complete: ->
     editor = atom.workspace.getActiveTextEditor()
+    Utils.complete editor if editor?
     # editor.moveToFirstCharacterOfLine()
     # DONE: find block detect function
     # DONE: find insertBlock function
     # DONE: find insertEndChar function
     # DONE: All those based on grammar
-    # TODO: can't use (Utils[grammarName] ? Utils.insertNewLine)(selection) because context changed
-    grammarName = @getGrammarName editor
-    editor?.mutateSelectedText (selection) ->
-      if Utils[grammarName]?
-        Utils[grammarName] selection
-      else
-        Utils.unsupport selection
-
-  getGrammarName: (editor) ->
-    grammar = editor?.getGrammar?()
-    grammarName = grammar.name ? grammar.scopeName if grammar?
-    grammarName?.toLowerCase()
 
   deactivate: ->
     @modalPanel.destroy()
