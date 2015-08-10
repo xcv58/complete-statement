@@ -1,58 +1,56 @@
 module.exports =
-  needPythonBlock: (selection) ->
-    (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
+  python: (selection) ->
+    if @needPythonBlock selection then @insertPythonBlock selection else @insertPythonEndChar selection
 
-  needCStyleBlock: (selection) ->
-    (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def']
+  java: (selection) ->
+    if @needJavaBlock selection then @insertCStyleBlock selection else @insertCStyleEndChar selection
 
-  needNullBlock: (selection) ->
-    false
+  unsupport: (selection) -> @insert selection, (selection) => @insertNewLine selection
 
-  insertPythonEndChar: (selection) ->
+  needPythonBlock: (selection) -> (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def', 'elif']
+
+  needCStyleBlock: (selection) -> (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch']
+
+  needJavaBlock: (selection) ->
+    return true if (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch']
+    (@lineContent selection)?.match(/(public|private).*(\(.*\)|class)/)
+
+  insert: (selection, fn) ->
     @removeTrailingWhitespace selection
-    @insertNewLine selection
+    fn selection
 
-  insertCStyleEndChar: (selection) ->
-    @removeTrailingWhitespace selection
-    @insertNewLine selection, (@lastChar selection), ';'
+  insertPythonEndChar: (selection) -> @insert selection, (selection) => @insertNewLine selection
 
-  insertNullEndChar: (selection) ->
-    @removeTrailingWhitespace selection
-    @insertNewLine selection
+  insertCStyleEndChar: (selection) -> @insert selection, (selection) => @insertNewLine selection, (@lastChar selection), ';'
 
-  insertPythonBlock: (selection) ->
-    @removeTrailingWhitespace selection
-    @insertNewLine selection, (@lastChar selection), ':'
+  insertPythonBlock: (selection) -> @insert selection, (selection) => @insertNewLine selection, (@lastChar selection), ':'
 
   insertCStyleBlock: (selection) ->
-    @removeTrailingWhitespace selection
-    lastChar = @lastChar selection
-    if lastChar is '{'
-      @insertNewLine selection
-    else
-      @insertTextAtEndOfLine selection, " {\n\n}"
-      selection.cursor.moveUp(1)
-      selection.cursor.moveToEndOfLine()
+    @insert selection, (selection) =>
+      lastChar = @lastChar selection
+      if lastChar is '{'
+        @insertNewLine selection
+      else
+        @insertTextAtEndOfLine selection, " {\n\n}"
+        selection.cursor.moveUp(1)
+        selection.cursor.moveToEndOfLine()
 
   removeTrailingWhitespace: (selection) ->
     selection.cursor.moveToBeginningOfLine()
     selection.selectToEndOfLine()
     selection.insertText selection.getText().replace(/[ \t]+$/, '')
 
-  firstWord: (selection) ->
+  lineContent: (selection) ->
     selection.cursor.moveToBeginningOfLine()
     selection.selectToEndOfLine()
-    selection.getText().match(/\w+/)?[0]
+    selection.getText()
 
-  lastChar: (selection) ->
-    selection.cursor.moveToEndOfLine()
-    selection.selectLeft()
-    char = selection.getText()
-    selection.cursor.moveRight(1)
-    char
+  firstWord: (selection) -> (@lineContent selection)?.match(/\w+/)?[0]
+
+  lastChar: (selection) -> (@lineContent selection).split('').pop()
 
   insertNewLine: (selection, lastChar = '', target = '') ->
-    target = '' if lastChar in [target, '\n']
+    target = '' if lastChar is target or not lastChar
     @insertTextAtEndOfLine selection, "#{target}\n "
 
   insertTextAtEndOfLine: (selection, text) ->
