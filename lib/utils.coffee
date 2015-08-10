@@ -9,6 +9,9 @@ module.exports =
   java: (selection) ->
     if @needJavaBlock selection then @insertCStyleBlock selection else @insertCStyleEndChar selection
 
+  javascript: (selection) ->
+    if @needJavaScriptBlock selection then @insertCStyleBlock selection else @insertCStyleEndChar selection
+
   unsupport: (selection) -> @insert selection, (selection) => @insertNewLine selection
 
   needPythonBlock: (selection) -> (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def', 'elif']
@@ -18,6 +21,10 @@ module.exports =
   needJavaBlock: (selection) ->
     return true if (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch']
     (@lineContent selection)?.match(/(public|private).*(\(.*\)|class)/)
+
+  needJavaScriptBlock: (selection) ->
+    return true if (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch']
+    (@lineContent selection)?.match(/function.*\(.*\)/)
 
   insert: (selection, fn) ->
     @removeTrailingWhitespace selection
