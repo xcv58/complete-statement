@@ -1,40 +1,60 @@
 module.exports =
   complete: (editor) ->
     grammarName = @getGrammarName editor
-    editor.mutateSelectedText (selection) => if @[grammarName] then @[grammarName] selection else @unsupport selection
+    editor.mutateSelectedText (selection) =>
+      if @[grammarName] then @[grammarName] selection else @unsupport selection
 
   python: (selection) ->
-    if @needPythonBlock selection then @insertPythonBlock selection else @insertPythonEndChar selection
+    if @needPythonBlock selection
+      @insertPythonBlock selection
+    else
+      @insertPythonEndChar selection
 
   java: (selection) ->
-    if @needJavaBlock selection then @insertCStyleBlock selection else @insertCStyleEndChar selection
+    if @needJavaBlock selection
+      @insertCStyleBlock selection
+    else
+      @insertCStyleEndChar selection
 
   javascript: (selection) ->
-    if @needJavaScriptBlock selection then @insertCStyleBlock selection else @insertCStyleEndChar selection
+    if @needJavaScriptBlock selection
+      @insertCStyleBlock selection
+    else
+      @insertCStyleEndChar selection
 
-  unsupport: (selection) -> @insert selection, (selection) => @insertNewLine selection
+  unsupport: (selection) ->
+    @insert selection, (selection) => @insertNewLine selection
 
-  needPythonBlock: (selection) -> (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch', 'def', 'elif']
+  needPythonBlock: (selection) -> (@firstWord selection) in
+    ['if', 'class', 'while', 'for', 'else', 'switch', 'def', 'elif']
 
-  needCStyleBlock: (selection) -> (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch']
+  needCStyleBlock: (selection) -> (@firstWord selection) in
+  ['if', 'class', 'while', 'for', 'else', 'switch']
 
   needJavaBlock: (selection) ->
-    return true if (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch']
+    return true if (@firstWord selection) in
+    ['if', 'class', 'while', 'for', 'else', 'switch']
     (@lineContent selection)?.match(/(public|private).*(\(.*\)|class)/)
 
   needJavaScriptBlock: (selection) ->
-    return true if (@firstWord selection) in ['if', 'class', 'while', 'for', 'else', 'switch']
+    return true if (@firstWord selection) in
+    ['if', 'class', 'while', 'for', 'else', 'switch']
     (@lineContent selection)?.match(/function.*\(.*\)/)
 
   insert: (selection, fn) ->
     @removeTrailingWhitespace selection
     fn selection
 
-  insertPythonEndChar: (selection) -> @insert selection, (selection) => @insertNewLine selection
+  insertPythonEndChar: (selection) ->
+    @insert selection, (selection) => @insertNewLine selection
 
-  insertCStyleEndChar: (selection) -> @insert selection, (selection) => @insertNewLine selection, (@lastChar selection), ';'
+  insertCStyleEndChar: (selection) ->
+    @insert selection, (selection) =>
+      @insertNewLine selection, (@lastChar selection), ';'
 
-  insertPythonBlock: (selection) -> @insert selection, (selection) => @insertNewLine selection, (@lastChar selection), ':'
+  insertPythonBlock: (selection) ->
+    @insert selection, (selection) =>
+      @insertNewLine selection, (@lastChar selection), ':'
 
   insertCStyleBlock: (selection) -> @insert selection, (selection) =>
     if (@lastChar selection) is '{'
