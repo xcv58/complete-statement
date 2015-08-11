@@ -25,16 +25,18 @@ module.exports =
   unsupport: (selection) ->
     @insert selection, (selection) => @insertNewLine selection
 
-  needPythonBlock: (selection) -> (@firstWord selection) in
+  needPythonBlock: (selection) ->
+    (@firstWord selection) in
     ['if', 'class', 'while', 'for', 'else', 'switch', 'def', 'elif']
 
-  needCStyleBlock: (selection) -> (@firstWord selection) in
-  ['if', 'class', 'while', 'for', 'else', 'switch']
+  needCStyleBlock: (selection) ->
+    (@firstWord selection) in
+    ['if', 'class', 'while', 'for', 'else', 'switch']
 
   needJavaBlock: (selection) ->
     return true if (@firstWord selection) in
     ['if', 'class', 'while', 'for', 'else', 'switch']
-    (@lineContent selection)?.match(/(public|private).*(\(.*\)|class)/)
+    (@lineContent selection)?.match(/(public|private|protected).*(\(.*\)|class|interface)/)
 
   needJavaScriptBlock: (selection) ->
     return true if (@firstWord selection) in
