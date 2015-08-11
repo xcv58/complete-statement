@@ -36,7 +36,7 @@ module.exports =
   needJavaBlock: (selection) ->
     return true if (@firstWord selection) in
     ['if', 'class', 'while', 'for', 'else', 'switch']
-    (@lineContent selection)?.match(/(public|private|protected).*(\(.*\)|class|interface)/)
+    (@lineContent selection)?.match(/(public|private|protected)[^=]*(\(.*\)|class|interface)/)
 
   needJavaScriptBlock: (selection) ->
     return true if (@firstWord selection) in
