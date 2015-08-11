@@ -52,7 +52,10 @@ module.exports =
 
   insertCStyleEndChar: (selection) ->
     @insert selection, (selection) =>
-      @insertNewLine selection, (@lastChar selection), ';'
+      if (@lastChar selection) isnt ';'
+        @insertTextAtEndOfLine selection, ';'
+      else
+        @insertNewLine selection
 
   insertPythonBlock: (selection) ->
     @insert selection, (selection) =>
