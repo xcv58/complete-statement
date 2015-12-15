@@ -1,7 +1,7 @@
 {
   "name": "complete-statement",
   "main": "./lib/complete-statement",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Completing Statements",
   "keywords": [],
   "activationCommands": {
