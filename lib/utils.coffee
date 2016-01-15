@@ -96,11 +96,11 @@ module.exports =
   getGrammarName: (editor) ->
     grammar = editor?.getGrammar?()
     grammarName = grammar.name ? grammar.scopeName if grammar?
-    grammarName = @extractBrackets grammarName if grammarName?.match('\\(.*\\)')
+    grammarName = @extractBrackets grammarName
     grammarName?.toLowerCase()
 
   extractBrackets: (text) ->
     left = text.indexOf('(')
     right = text.indexOf(')', left)
-    content = text.substring left + 1, right
-    content.trim()
+    text = text.substring left + 1, right if (left != -1 and right != -1)
+    text.trim()
